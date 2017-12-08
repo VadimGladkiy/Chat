@@ -1,0 +1,116 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" content="text/html" />
+        <title>Home page</title>
+         
+        
+    </head>
+    <body>
+        <a id="register_link" href="/Home/Register">
+            To register
+        </a>
+        <div id="Login_place">
+            <div></div>
+        </div>
+        <div id="Login_status">
+            <div></div>
+            <a id="log_off_link" href="/api/Header/LogOff">log off</a>
+        </div>
+        <div class="container">
+            <div class="row col-md-12">
+                <div id="Groups" class="col-md-4">
+                    
+                    @Html.Action("IsAuthorizedUser")
+                </div>
+                <div id="Conversations" class="col-md-6">
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            method: "Get",
+            url: "/api/Header/GetLogin",
+            dataType: 'html',
+            success: function (data) {
+                $(data).replaceAll("#Login_place div:first");
+
+            },
+            error: function () {
+                alert("GetLogin Error");
+            },
+            statusCode: {
+                200: function () {
+                    $('a#log_off_link').css('display', 'inline');
+                    $('a#register_link').css('display', 'none');
+                }
+            }
+        });
+       
+        $('body').delegate("#log_submit", "click",
+            function (event) {
+                var log = $('#login').val();
+                var pass = $('#password').val();
+                console.log('login: ' + log);
+                console.log('password: ' + pass);
+                var formVals =
+                    {
+                        login: log,
+                        password: pass
+                    };
+                var StringsKeeper =
+                {
+                    DataInMemory: "",
+                    KeepData: function (htmlStrings) { this.DataInMemory = htmlStrings },
+                    GetData: function () { return this.DataInMemory }
+                };
+                $.post({
+                    url: "/api/Header/PostLogin",
+                    dataType: "html",
+                    data: formVals,
+                    success: function (data) {
+                        console.log("data: " + data);
+                        StringsKeeper.KeepData(data);
+                        
+                    },
+                    statusCode: {
+                        401: function () {
+                            console.log("401");
+                            $('<div><p>user with login: ' + log + ' and/or password: ' + pass +
+                                ' is unauthorized. Error 401 </p></div>')
+                                .replaceAll('#Login_status div:first');
+                        },
+                        206: function () {
+                            console.log("206");
+                            $('div#Login_place').css('display', 'none');
+                            $('a#log_off_link').css('display', 'inline');
+                            receivedHtmlStr = StringsKeeper.GetData();
+                            $("div#Login_status div:first").replaceWith(receivedHtmlStr);
+                            
+                        },
+                        301: function () {
+                            console.log("301");
+                        },
+                        200: function () {
+                            console.log("200");
+                        }
+                    }
+                });
+            });
+        $('body').delegate("#msg_write", "click",
+            function (event) {
+                var text = $("#new_msg").val();
+            });
+
+    });
+    
+</script>
+

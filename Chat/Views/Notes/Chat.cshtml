@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Chat.Models.Message>
+<div>
+    <strong>chat identifier: @ViewData["ChatId"]</strong>
+</div>
+<div class="container" id="chat_current">
+    @if (Model != null)
+    {
+        foreach (var ptr in Model)
+        {
+        <div>
+            <p>
+                From: @ptr.OwnerName
+                <span> </span>
+                Time: @ptr.Time
+                <input type="hidden" value="@ptr.Message_Id" />
+            </p>
+            <p>
+                @ptr.Text
+            </p>
+        </div>
+        }
+    }
+</div>
+<div>
+@using (Ajax.BeginForm("WriteMessage","Notes",new AjaxOptions
+    {
+        UpdateTargetId = "chat_current",
+        HttpMethod = "Post",
+        InsertionMode = InsertionMode.InsertBefore,
+    }))
+    { 
+    <div>
+        <textarea id="new_msg" placeholder="enter a msg"
+               rows="4" cols="100" name="new_message"
+               maxlength="510" required>
+        </textarea>
+        <input type="hidden" name="chat_id_curr" value="@ViewData["ChatId"]">
+    </div>
+    <div>
+        <input type="submit" value="write down" id="msg_write" />
+    </div>
+    }
+</div>
+<script type="text/javascript">
+    function UpdatedMsgs() {
+        var last_message_id = $("#chat_current div:last p:first input").val();
+        if (typeof last_message_id != "undefined") {
+            console.log("lastMessageId: " + last_message_id);
+            $.ajax({
+                async: false,
+                method: "Get",
+                url: "/api/Check/CheckMessages/{chatId}/{lastMsgId}",
+                data: {
+                    chatId: "@ViewData["ChatId"].ToString()",
+                    lastMsgId: last_message_id
+                },
+                dataType: "html",
+                success: function (data) {
+                    console.log("data: "+data);
+                    $(data).appendTo("#chat_current");
+                    $("#new_msg").empty();
+                }
+            })
+        }
+    };
+    
+    setTimeout(function Run()
+    {
+        UpdatedMsgs();
+        var timerId =
+        setTimeout(Run, 5000);
+        
+    }, 5000);
+    
+</script>
+
+

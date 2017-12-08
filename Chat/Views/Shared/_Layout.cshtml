@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    
+    <script src="~/Scripts/jquery-3.2.1.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/LayoutSheet.css" rel="stylesheet" />
+    
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container navContainerMy">
+            <div class="navbar-header">
+            
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                        <li>
+                            <a href="/Home/Index">Home</a>
+                        </li>
+                        <li>
+                            <a href="/Friend/Friends">Friends</a>
+                        </li>
+                        <li class="navBids">
+                            <a href="/Friend/Bids">Bids</a>
+                        </li>
+                        <li>
+                            <a id="register_link" href="/Home/Register">
+                            To register
+                            </a>
+                        </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    function newBids()
+    {
+        $.ajax({
+            async: false,
+            method: "Get",
+            url: "/api/Check/CheckBids",
+            statusCode:
+            {
+                200: function (){
+                    console.log("200");
+                    $(".navBids").css({ "background-color": "yellow", "border": "double" });
+                },
+                404: function(){
+                    console.log("404");
+                    $(".navBids").css({ "background-color": "inherit", "border": "" });
+                }
+            }
+        })
+    };
+    setTimeout(function Run()
+    {
+        newBids();
+        var timerId =
+        setTimeout(Run, 60000);
+        console.log("bid id: " + timerId);
+    }, 60000);
+</script>

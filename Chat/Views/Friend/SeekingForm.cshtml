@@ -1,0 +1,19 @@
+﻿@using (Ajax.BeginForm("SearchFriend", "Friend",new AjaxOptions
+    {
+        UpdateTargetId = "FoundPeople",
+        InsertionMode = InsertionMode.Replace    
+    }))
+{
+    <div class="container">
+    <div class="form-group row col-md-12">
+        <label for="search_friend" class="col-md-3">Search a friend</label>
+        <div class="col-md-6">
+            <input type="text" id="search_friend" placeholder="Search a friend" name="persName"/>
+        </div>
+        <div class="col-md-3">
+            <input type="submit" value="search" />
+        </div>
+    </div>
+    </div>
+}
+

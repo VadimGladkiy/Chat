@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Chat.Models.Friend>
+<div>
+    @if(Model != null)
+    {
+        foreach (var fr in Model)
+        {
+            <p>
+            @fr.FullName ,
+            @fr.Login ,
+            @fr.Email 
+            </p>
+            if (!fr.IsFriendAccepted)
+            {
+                @Html.ActionLink("setContact", "SetContact",
+                     new { cont_id = fr.FriendId })
+            }
+            else
+            {
+                <span>Hi is your friend</span> 
+            }
+        }
+    }
+</div>

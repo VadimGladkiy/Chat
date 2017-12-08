@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Chat.Models.Friend>
+<html>
+<body>
+    <h2>FriendList</h2>
+    @{ Html.RenderPartial("SeekingForm"); }
+    <div class="container">
+        <div class="row col-md-12">
+            <div class="col-md-6">
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Login)
+                    </th>
+                </tr>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Login)
+                        </td>
+                        <td>
+                            @Html.ActionLink("CreateConversation", "CreateChat", "Notes",
+                            new { friend_id = item.FriendId },
+                            new {})
+                        </td>
+                        <td>
+                            @Html.ActionLink("RemoveFriend", "RemoveFriend", new { comrade_id = item.FriendId })
+                        </td>
+                    </tr>
+                    }
+                }
+            </table>
+            </div>
+            <div class="col-md-6" id="FoundPeople"></div>
+        </div>
+    </div>
+<script>
+jQuery(document).ready(function ()
+{
+    $("#SearchPers").on("click", function ()
+    {
+        $.ajax({
+            url: "/Friend/SearchFriend/{persName}",
+            type: "Post",
+            dataType: "html",
+            data: { persName: $("#search_friend").val() },
+            success: function (data)
+            {
+                alert("success");
+            },
+             error: function ()
+            {
+                alert("error");
+            }
+        })
+     });
+});
+</script>
+</body>
+</html>

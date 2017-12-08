@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Chat.Models.Chat>
+
+<div>
+            <h4>Conversations</h4>
+            @if (Model != null)
+            {
+                foreach (var ptr in Model)
+                {
+                <div id="@ptr.Chat_Id" class="chat">
+                    <p>
+                        chat_identifier: @ptr.Chat_Id
+                    </p>
+                    <p>
+                        participants: @foreach (var name in ptr.ChatParticipantsNames)
+                        {
+                            @name @:,
+                        }
+                    </p>
+                    @Ajax.ActionLink("load a conversation", "LoadChat","Notes",
+                         new
+                         {
+                             chat_id = ptr.Chat_Id
+                         },new AjaxOptions
+                         {
+                             UpdateTargetId = "Conversations",
+                             InsertionMode = InsertionMode.Replace,
+                             HttpMethod = "Get"
+                         })
+                </div>
+                }
+            }
+</div>
+<script type="text/javascript">
+    function UpdateChats() 
+    {
+        
+        var jsonS = JSON.stringify( @Html.Raw(ViewData["chats_json"]));
+        console.log("json: " + jsonS);
+
+        $.ajax(
+        {
+         async: false,
+         url: "/api/Check/CheckChats",
+         type: "Post",
+         contentType: "application/json",
+         dataType:"json",
+         data: jsonS,
+         success: function (dataList) {
+
+             console.log("dataListLength: " + dataList.length);
+             console.log("dataList: " + dataList);
+             if (dataList.length > 0)
+             {
+                 // search new chats
+                 var newChatsIds = [];
+
+                 if (dataList.length == 1) {
+                     newChatsIds.push(dataList);
+                 }
+                 else
+                 {   
+                    newChatsIds = dataList;
+                 }
+
+                 if (newChatsIds.length > 0)
+                 {
+                     console.log("list need to update! " + newChatsIds);
+                     UpdateChatList(newChatsIds);
+                 }
+
+                 if (newChatsIds.length > 1)
+                 {
+                     $(newChatsIds).each(function (index, value)
+                     {
+                        console.log("dataList[i]: " + value);
+                        $("#" + value).css({
+                            "background-color": "green",
+                            "border": "dashed"
+                        });
+                     });
+                     
+                 } else if (newChatsIds.length == 1){
+                     $("#" + newChatsIds.pop()).css({
+                         "background-color": "green",
+                         "border": "dashed"
+                     });
+                 }
+             }
+         }
+     });
+    };
+    
+    setTimeout(function Run()
+    {
+        UpdateChats();
+        var timerId =
+        setTimeout(Run, 10000);
+    }, 10000);
+    
+    function UpdateChatList(array)
+    {
+        $.ajax({
+            async: false,
+            url: "/Home/IsAuthorizedUser",
+            type: "Get",
+            dataType: "html",
+            success: function (data)
+            {
+                $(data).replaceAll("#Groups div:first");
+            }
+        });
+    }
+</script>

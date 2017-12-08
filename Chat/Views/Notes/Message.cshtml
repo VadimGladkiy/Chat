@@ -1,0 +1,12 @@
+﻿@model Chat.Models.Message
+<div>
+    <p>
+        From: @Model.OwnerName
+        <span> </span>
+        Time: @Model.Time
+        <input type="hidden" value="@Model.Message_Id" />
+    </p>
+    <p>
+        @Model.Text
+    </p>
+</div>

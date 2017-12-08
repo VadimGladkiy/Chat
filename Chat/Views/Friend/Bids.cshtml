@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Chat.Models.Friend>
+
+@{
+    ViewBag.Title = "Bids";
+}
+
+<h2>Bids</h2>
+<div class="container">
+<table class="table table-hover">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FullName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Login)
+        </th>
+        <th>
+            <span>Accept a bid</span>
+        </th>
+        <th>
+            <span>Deny a bid</span>
+        </th>
+    </tr>
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Login)
+            </td>
+            <td>
+                @Html.ActionLink("Accept bid", "AcceptBid", new { applicant_id = item.FriendId }) 
+            </td>
+            <td>
+                @Html.ActionLink("Deny bid", "DenyBid", new { applicant_id = item.FriendId })
+            </td>
+        </tr>
+        }
+    }
+</table>
+</div>
